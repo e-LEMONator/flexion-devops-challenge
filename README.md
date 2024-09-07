@@ -85,7 +85,7 @@ Once deployed, you can interact with the application via the exposed REST API. T
   "input_value": 84.2,
   "input_unit": "Fahrenheit",
   "target_unit": "Rankine",
-  "student_response": "543.9"
+  "student_response": 543.9
 }
 ```
 
@@ -101,7 +101,7 @@ curl -X POST https://your-api-id.execute-api.region.amazonaws.com/convert \
   "input_value": 84.2,
   "input_unit": "Fahrenheit",
   "target_unit": "Rankine",
-  "student_response": "543.9"
+  "student_response": 543.9
 }'
 ```
 

@@ -53,7 +53,7 @@ def input_validation(event):
         None
     """
     try:
-        input_value = float(event['input_value'])
+        input_value = event['input_value']
         input_unit = event['input_unit']
         target_unit = event['target_unit']
         student_response = event['student_response']
@@ -64,8 +64,8 @@ def input_validation(event):
             raise ValueError(f"Invalid input unit. Supported units are: {', '.join(VALID_UNITS)}")
         if target_unit not in VALID_UNITS:
             raise ValueError(f"Invalid target unit. Supported units are: {', '.join(VALID_UNITS)}")
-        if not isinstance(student_response, str):
-            raise ValueError("Student response must be a string")
+        if not isinstance(student_response, (int, float)):
+            raise ValueError("Student response must be a number")
     except ValueError as e:
         logger.error(f"Input validation error: {e}")
         raise
@@ -122,7 +122,7 @@ def check_response(authoritative, student):
 
     Parameters:
         authoritative (float): The authoritative answer.
-        student (str): The student's response.
+        student (float/int): The student's response.
 
     Raises:
         ValueError: If the student's response is not a valid number.
@@ -136,4 +136,4 @@ def check_response(authoritative, student):
         else:
             return "incorrect"
     except ValueError:
-        return "invalid"
+        return "Invalid response"
