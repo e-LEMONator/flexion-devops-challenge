@@ -11,9 +11,9 @@ VALID_UNITS = ["Fahrenheit", "Celsius", "Kelvin", "Rankine"]
 logger = logging.getLogger()
 logger.setLevel(logging.INFO) # Change to DEBUG for more verbose logging
 
-# If using a specific logger, explicitly configure the root logger
-for handler in logger.handlers:
-    handler.setLevel(logging.INFO)
+# # If using a specific logger, explicitly configure the root logger
+# for handler in logger.handlers:
+#     handler.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     """
@@ -34,7 +34,14 @@ def lambda_handler(event, context):
     try:
         # If the event body is a string, parse it as JSON
         if isinstance(event.get("body"), str):
-            event = json.loads(event["body"])
+            try:
+                event = json.loads(event["body"])
+            except json.JSONDecodeError as e:
+                logger.error(f"Error decoding JSON: {e}")
+                return {
+                    "statusCode": 400,
+                    "body": json.dumps({"error": "Invalid JSON body"})
+                }
 
         # Check if all required keys are present in the event
         required_keys = ['input_value', 'input_unit', 'target_unit', 'student_response']
