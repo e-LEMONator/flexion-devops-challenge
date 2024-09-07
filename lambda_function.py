@@ -1,4 +1,5 @@
 # commercial imports
+import json
 import logging
 import traceback
 from pint import UnitRegistry
@@ -6,9 +7,13 @@ from pint import UnitRegistry
 # constants
 VALID_UNITS = ["Fahrenheit", "Celsius", "Kelvin", "Rankine"]
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+# Set up logging for Lambda to CloudWatch
 logger = logging.getLogger()
+logger.setLevel(logging.INFO) # Change to DEBUG for more verbose logging
+
+# If using a specific logger, explicitly configure the root logger
+for handler in logger.handlers:
+    handler.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     """
@@ -27,6 +32,10 @@ def lambda_handler(event, context):
     logger.info(f"Received event: {event}")
 
     try:
+        # If the event body is a string, parse it as JSON
+        if isinstance(event.get("body"), str):
+            event = json.loads(event["body"])
+
         # Check if all required keys are present in the event
         required_keys = ['input_value', 'input_unit', 'target_unit', 'student_response']
         for key in required_keys:
@@ -45,12 +54,29 @@ def lambda_handler(event, context):
 
         authoritative_answer = convert_unit(input_value, input_unit, target_unit)
         response_status = check_response(authoritative_answer, student_response)
-        return {"result": response_status}
+
+        # Log the result along with the input values
+        logger.info(f"input value: {input_value}, input unit: {input_unit}, target unit: {target_unit}, student response: {student_response}")
+        logger.info(f"authoritative answer: {authoritative_answer}, response status: {response_status}")
+
+        # Return a properly formatted response
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"result": response_status}),
+        }
+    except KeyError as e:
+        logger.error(f"Missing required key: {e}")
+        return {
+            "statusCode": 400,
+            "body": json.dumps({"error": str(e)})
+        }
     except Exception as e:
         logger.error(f"Error processing event: {e}")
         logger.error(traceback.format_exc())
-        logger.error(f"Error processing event: {e}")
-        return {"error": str(e)}
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
 
 def input_validation(event):
     """
