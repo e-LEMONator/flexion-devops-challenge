@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import patch
 from lambda_function import lambda_handler, convert_unit, input_validation
 
 class TestLambdaFunction(unittest.TestCase):
