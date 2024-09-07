@@ -15,6 +15,7 @@ This application is deployed using AWS Lambda and integrates with AWS API Gatewa
 3. [Deployment](#deployment)
 4. [API Usage](#api-usage)
 5. [Improvements](#improvements)
+6. [Conclusion](#conclusion)
 
 ---
 
@@ -47,7 +48,7 @@ pip install -r requirements.txt
 ### 3. Run the application locally (optional)
 You can test the application locally using AWS SAM:
 ```bash
-sam local invoke -e event.json
+sam local invoke -e events/event.json
 ```
 This will invoke the Lambda function locally using a test event specified in `event.json`.
 
