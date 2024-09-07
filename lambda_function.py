@@ -1,5 +1,6 @@
 # commercial imports
 import logging
+import traceback
 from pint import UnitRegistry
 
 # constants
@@ -23,13 +24,22 @@ def lambda_handler(event, context):
     Returns:
         dict: A dictionary containing the result of the comparison.
     """
+    logger.info(f"Received event: {event}")
+
     try:
+        # Check if all required keys are present in the event
+        required_keys = ['input_value', 'input_unit', 'target_unit', 'student_response']
+        for key in required_keys:
+            if key not in event:
+                raise KeyError(f"Missing required key: {key}")
+
+
         input_value = event['input_value']
         input_unit = event['input_unit']
         target_unit = event['target_unit']
         student_response = event['student_response']
 
-        logger.info(f"Received event: {event}")
+        logger.info(f"Processing input_value: {input_value}, input_unit: {input_unit}, target_unit: {target_unit}, student_response: {student_response}")
 
         input_validation(event)
 
@@ -37,6 +47,8 @@ def lambda_handler(event, context):
         response_status = check_response(authoritative_answer, student_response)
         return {"result": response_status}
     except Exception as e:
+        logger.error(f"Error processing event: {e}")
+        logger.error(traceback.format_exc())
         logger.error(f"Error processing event: {e}")
         return {"error": str(e)}
 
@@ -58,6 +70,8 @@ def input_validation(event):
         input_unit = event['input_unit']
         target_unit = event['target_unit']
         student_response = event['student_response']
+
+        logger.info(f"Validating input_value: {input_value}, input_unit: {input_unit}, target_unit: {target_unit}, student_response: {student_response}")
 
         if not isinstance(input_value, (int, float)):
             raise ValueError("Input value must be a number")
