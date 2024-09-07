@@ -1,4 +1,7 @@
+# commercial imports
 import unittest
+
+# local imports
 from lambda_function import lambda_handler, convert_unit, input_validation
 
 class TestLambdaFunction(unittest.TestCase):

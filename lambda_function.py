@@ -1,5 +1,6 @@
 # commercial imports
 import logging
+from pint import UnitRegistry
 
 # constants
 VALID_UNITS = ["Fahrenheit", "Celsius", "Kelvin", "Rankine"]
@@ -87,7 +88,6 @@ def convert_unit(value, from_unit, to_unit):
         float: The converted temperature value rounded to the nearest tenth.
     """
     # Using the pint library to handle unit conversions
-    from pint import UnitRegistry
     ureg = UnitRegistry()
 
     # Create a dictionary of conversion factors
