@@ -113,7 +113,7 @@ Here are some potential improvements for the application that can be implemented
 1. **Additional Unit Conversions**: Add support for additional units of measure beyond temperature conversions (e.g., length, weight).
 2. **UI/UX Improvements**: Create a simple web interface that allows non-technical users (teachers) to interact with the system.
 3. **Error Handling**: Improve error handling for invalid inputs and units with more user-friendly messages.
-4. **Logging and Monitoring**: Integrate AWS CloudWatch for detailed logging and monitoring of API requests and Lambda executions.
+4. **Lambda Authentication**: Add authentication and authorization to the Lambda function to restrict access to authorized users.
 5. **Scalability**: Implement database integration (e.g., DynamoDB) for storing student responses and results for further analysis and reporting.
 
 ---
