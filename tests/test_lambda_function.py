@@ -42,6 +42,26 @@ class TestLambdaFunction(unittest.TestCase):
         result = json.loads(result['body'])
         self.assertEqual(result['result'], 'incorrect')
 
+        # Test invalid JSON input
+        invalid_json_event = {
+            "body": "invalid"
+        }
+        result = lambda_handler(invalid_json_event, None)
+        result_body = json.loads(result['body'])
+        self.assertEqual(result['statusCode'], 400)
+        self.assertEqual(result_body['error'], "Invalid JSON body")
+
+        # Test missing required key
+        missing_key_event = {
+            'input_value': 32,
+            'input_unit': 'Fahrenheit',
+            'student_response': 0.0
+        }
+        result = lambda_handler(missing_key_event, None)
+        result_body = json.loads(result['body'])
+        self.assertEqual(result['statusCode'], 400)
+        self.assertTrue("Missing required key" in result_body['error'])
+
     def test_input_validation(self):
         # Test valid input
         event = {
