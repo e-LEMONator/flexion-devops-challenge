@@ -1,4 +1,5 @@
 # commercial imports
+import json
 import unittest
 
 # local imports
@@ -31,25 +32,15 @@ class TestLambdaFunction(unittest.TestCase):
             'student_response': 0.0
         }
         result = lambda_handler(event, None)
+        result = json.loads(result['body'])
         self.assertEqual(result['result'], 'correct')
 
         # Test incorrect response
         test_event = event.copy()
         test_event['student_response'] = 1.0
         result = lambda_handler(test_event, None)
+        result = json.loads(result['body'])
         self.assertEqual(result['result'], 'incorrect')
-
-        # # Test invalid response
-        # test_event = event.copy()
-        # test_event['student_response'] = 'invalid'
-        # result = lambda_handler(test_event, None)
-        # self.assertEqual(result['result'], 'invalid')
-        #
-        # # Test invalid unit
-        # test_event = event.copy()
-        # test_event['input_unit'] = 'InvalidUnit'
-        # result = lambda_handler(test_event, None)
-        # self.assertIn('error', result)
 
     def test_input_validation(self):
         # Test valid input
