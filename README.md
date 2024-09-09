@@ -110,10 +110,10 @@ curl -X POST https://{{your-api-id}}.execute-api.{{region}}.amazonaws.com/{{stag
 ## Improvements
 Here are some potential improvements for the application that can be implemented in future iterations:
 
-1. **Additional Unit Conversions**: Add support for additional units of measure beyond temperature conversions (e.g., length, weight).
-2. **UI/UX Improvements**: Create a simple web interface that allows non-technical users (teachers) to interact with the system.
-3. **Error Handling**: Improve error handling for invalid inputs and units with more user-friendly messages.
-4. **Lambda Authentication**: Add authentication and authorization to the Lambda function to restrict access to authorized users.
+1. **Lambda Authentication**: Add authentication and authorization to the Lambda function to restrict access to authorized users.
+2. **Additional Unit Conversions**: Add support for additional units of measure beyond temperature conversions (e.g., length, weight).
+3. **UI/UX Improvements**: Create a simple web interface that allows non-technical users (teachers) to interact with the system.
+4. **Batch Grade Upload**: Allow the user to upload a CSV file with multiple student responses for batch grading.
 5. **Scalability**: Implement database integration (e.g., DynamoDB) for storing student responses and results for further analysis and reporting.
 
 ---
