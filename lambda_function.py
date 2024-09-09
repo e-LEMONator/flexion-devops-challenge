@@ -6,14 +6,16 @@ from pint import UnitRegistry
 
 # constants
 VALID_UNITS = ["Fahrenheit", "Celsius", "Kelvin", "Rankine"]
+REQUIRED_KEYS = ['input_value', 'input_unit', 'target_unit', 'student_response']
+ERROR_INVAlID_JSON = "Invalid JSON body"
+ERROR_MISSING_KEY = "Missing required key: {}"
+ERROR_INVALID_INPUT = "Input value must be a number"
+ERROR_INVALID_UNIT = "Invalid {} unit. Supported units are: {}"
+ERROR_INVALID_RESPONSE = "Student response must be a number"
 
 # Set up logging for Lambda to CloudWatch
 logger = logging.getLogger()
 logger.setLevel(logging.INFO) # Change to DEBUG for more verbose logging
-
-# # If using a specific logger, explicitly configure the root logger
-# for handler in logger.handlers:
-#     handler.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     """
@@ -40,14 +42,13 @@ def lambda_handler(event, context):
                 logger.error(f"Error decoding JSON: {e}")
                 return {
                     "statusCode": 400,
-                    "body": json.dumps({"error": "Invalid JSON body"})
+                    "body": json.dumps({"error": ERROR_INVAlID_JSON})
                 }
 
         # Check if all required keys are present in the event
-        required_keys = ['input_value', 'input_unit', 'target_unit', 'student_response']
-        for key in required_keys:
+        for key in REQUIRED_KEYS:
             if key not in event:
-                raise KeyError(f"Missing required key: {key}")
+                raise KeyError(ERROR_MISSING_KEY.format(key))
 
 
         input_value = event['input_value']
@@ -63,7 +64,6 @@ def lambda_handler(event, context):
         response_status = check_response(authoritative_answer, student_response)
 
         # Log the result along with the input values
-        logger.info(f"input value: {input_value}, input unit: {input_unit}, target unit: {target_unit}, student response: {student_response}")
         logger.info(f"authoritative answer: {authoritative_answer}, response status: {response_status}")
 
         # Return a properly formatted response
@@ -106,14 +106,14 @@ def input_validation(event):
 
         logger.info(f"Validating input_value: {input_value}, input_unit: {input_unit}, target_unit: {target_unit}, student_response: {student_response}")
 
-        if not isinstance(input_value, (int, float)):
-            raise ValueError("Input value must be a number")
-        if input_unit not in VALID_UNITS:
-            raise ValueError(f"Invalid input unit. Supported units are: {', '.join(VALID_UNITS)}")
-        if target_unit not in VALID_UNITS:
-            raise ValueError(f"Invalid target unit. Supported units are: {', '.join(VALID_UNITS)}")
-        if not isinstance(student_response, (int, float)):
-            raise ValueError("Student response must be a number")
+        if not isinstance(input_value, (int, float)):  # Check if the input value is a number
+            raise ValueError(ERROR_INVALID_INPUT)
+        if input_unit not in VALID_UNITS:  # Check if the input unit is valid
+            raise ValueError(ERROR_INVALID_UNIT.format("input", ", ".join(VALID_UNITS)))
+        if target_unit not in VALID_UNITS:  # Check if the target unit is valid
+            raise ValueError(ERROR_INVALID_UNIT.format("target", ", ".join(VALID_UNITS)))
+        if not isinstance(student_response, (int, float)):  # Check if the student response is a number
+            raise ValueError(ERROR_INVALID_RESPONSE)
     except ValueError as e:
         logger.error(f"Input validation error: {e}")
         raise
@@ -147,7 +147,7 @@ def convert_unit(value, from_unit, to_unit):
 
     # Ensure the from_unit and to_unit are valid
     if from_unit not in conversion_factors or to_unit not in conversion_factors:
-        raise ValueError(f"Invalid unit. Supported units are: {', '.join(conversion_factors.keys())}")
+        raise ValueError(ERROR_INVALID_UNIT.format("input or target",', '.join(conversion_factors.keys())))
 
     try:
         # Convert the input value to a Pint Quantity object
@@ -183,4 +183,4 @@ def check_response(authoritative, student):
         else:
             return "incorrect"
     except ValueError:
-        return "Invalid response"
+        return "invalid response"
