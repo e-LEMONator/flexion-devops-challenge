@@ -96,7 +96,7 @@ Once deployed, you can interact with the application via the exposed REST API. T
 
 ### Example cURL Request
 ```bash
-curl -X POST https://your-api-id.execute-api.region.amazonaws.com/convert \
+curl -X POST https://{{your-api-id}}.execute-api.region.amazonaws.com/convert \
 -d '{
   "input_value": 84.2,
   "input_unit": "Fahrenheit",
